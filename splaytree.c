@@ -180,8 +180,13 @@ void rotateright(struct SplayTree* t, struct Node* n)
     struct Node* p = n->parent;
     p->lchild = n->rchild;
     n->rchild = p;
-    if (p == t->root)
+    if (p == t->root) {
         t->root = n;
+    } else {
+        p->parent->lchild = n;
+        n->parent = p->parent;
+        p->parent = n;
+    }
 }
 
 void rotateleft(struct SplayTree* t, struct Node* n)
@@ -190,8 +195,13 @@ void rotateleft(struct SplayTree* t, struct Node* n)
     struct Node* p = n->parent;
     p->rchild = n->lchild;
     n->lchild = p;
-    if (p == t->root)
+    if (p == t->root) {
         t->root = n;
+    } else {
+        p->parent->rchild = n;
+        n->parent = p->parent;
+        p->parent = n;
+    }
 }
 
 void splay(struct SplayTree* t, struct Node* n)
@@ -211,8 +221,6 @@ void splay(struct SplayTree* t, struct Node* n)
     }
 
     struct Node* p = n->parent;
-    // struct Node *gp = n->parent->parent;
-
     if (isLeftChild(n) && isLeftChild(p)) {
         rotateright(t, p);
         rotateright(t, n);
@@ -228,4 +236,10 @@ void splay(struct SplayTree* t, struct Node* n)
     } else {
         assert(0);
     }
+}
+
+void splayup(struct SplayTree* t, struct Node* n)
+{
+    while (n != t->root)
+        splay(t, n);
 }
