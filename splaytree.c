@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "splaytree.h"
 #include "debug_macros.h"
+#include "splaytree.h"
 
 struct Node* newNode(int x)
 {
@@ -159,7 +159,8 @@ void print_inorder(struct SplayTree* t)
     printf("\n");
 }
 
-void free_postorder(struct Node* n) {
+void free_postorder(struct Node* n)
+{
     if (n == NULL) {
         return;
     }
@@ -168,7 +169,63 @@ void free_postorder(struct Node* n) {
     free(n);
 }
 
-void free_treenodes(struct SplayTree* t) {
+void free_treenodes(struct SplayTree* t)
+{
     free_postorder(t->sentinal);
 }
 
+void rotateright(struct SplayTree* t, struct Node* n)
+{
+    assert(n != t->root);
+    struct Node* p = n->parent;
+    p->lchild = n->rchild;
+    n->rchild = p;
+    if (p == t->root)
+        t->root = n;
+}
+
+void rotateleft(struct SplayTree* t, struct Node* n)
+{
+    assert(n != t->root);
+    struct Node* p = n->parent;
+    p->rchild = n->lchild;
+    n->lchild = p;
+    if (p == t->root)
+        t->root = n;
+}
+
+void splay(struct SplayTree* t, struct Node* n)
+{
+    if (n == t->root)
+        return;
+
+    if (n->parent == t->root) {
+        if (isLeftChild(n)) {
+            rotateright(t, n);
+        } else if (isRightChild(n)) {
+            rotateleft(t, n);
+        } else {
+            assert(0);
+        }
+        return;
+    }
+
+    struct Node* p = n->parent;
+    // struct Node *gp = n->parent->parent;
+
+    if (isLeftChild(n) && isLeftChild(p)) {
+        rotateright(t, p);
+        rotateright(t, n);
+    } else if (isRightChild(n) && isRightChild(p)) {
+        rotateleft(t, p);
+        rotateleft(t, n);
+    } else if (isLeftChild(n) && isRightChild(p)) {
+        rotateright(t, n);
+        rotateleft(t, n);
+    } else if (isRightChild(n) && isLeftChild(p)) {
+        rotateleft(t, n);
+        rotateright(t, n);
+    } else {
+        assert(0);
+    }
+}

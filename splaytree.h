@@ -29,3 +29,6 @@ static void _print_inorder(struct Node* n);
 void print_inorder(struct SplayTree* t);
 void free_postorder(struct Node* n);
 void free_treenodes(struct SplayTree* t);
+void rotateright(struct SplayTree* t, struct Node* n);
+void rotateleft(struct SplayTree* t, struct Node* n);
+void splay(struct SplayTree* t, struct Node* n);
