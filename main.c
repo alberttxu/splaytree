@@ -5,8 +5,8 @@
 #include "debug_macros.h"
 #include "splaytree.h"
 
-/*
-void test1()
+#if eltype_num == int_type
+void test1(void)
 {
     puts("\n======== test 1 ========");
     struct SplayTree t = newTree();
@@ -21,7 +21,7 @@ void test1()
     assert(t.root == n);
 }
 
-void test2()
+void test2(void)
 {
     puts("\n======== test 2 ========");
     struct SplayTree t = newTree();
@@ -36,7 +36,7 @@ void test2()
     assert(t.root == n);
 }
 
-void test3()
+void test3(void)
 {
     puts("\n======== test 3 ========");
     struct SplayTree t = newTree();
@@ -58,8 +58,9 @@ void test3()
     assert(t.root->lchild->rchild->data == 4);
     assert(t.root->lchild->rchild->lchild->data == 3);
 }
-*/
+#endif
 
+#if eltype_num == float_type
 void test4(void)
 {
     puts("\n======== test 4 ========");
@@ -78,12 +79,17 @@ void test4(void)
     printf("post-order:\t");
     printtree(&t, POSTORDER);
 }
+#endif
 
 int main(void)
 {
-    // test1();
-    // test2();
-    // test3();
+#if eltype_num == int_type
+    test1();
+    test2();
+    test3();
+#endif
+#if eltype_num == float_type
     test4();
+#endif
     return 0;
 }

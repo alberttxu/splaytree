@@ -4,7 +4,16 @@
 #ifndef SPLAYTREE_H
 #define SPLAYTREE_H
 
-#define eltype float
+#define int_type 0
+#define float_type 1
+#define eltype_num int_type
+
+#if eltype_num == int_type
+    #define eltype int
+#elif eltype_num == float_type
+    #define eltype float
+#endif
+
 struct Node {
     struct Node* parent;
     struct Node* lchild;

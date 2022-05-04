@@ -149,8 +149,11 @@ static void _print_inorder(struct Node* n)
     if (n == NULL)
         return;
     _print_inorder(n->lchild);
-    // printf("%d ", n->data);
+#if eltype_num == int_type
+    printf("%d ", n->data);
+#elif eltype_num == float_type
     printf("%f ", n->data);
+#endif
     _print_inorder(n->rchild);
 }
 
@@ -158,8 +161,11 @@ static void _print_preorder(struct Node* n)
 {
     if (n == NULL)
         return;
-    // printf("%d ", n->data);
+#if eltype_num == int_type
+    printf("%d ", n->data);
+#elif eltype_num == float_type
     printf("%f ", n->data);
+#endif
     _print_preorder(n->lchild);
     _print_preorder(n->rchild);
 }
@@ -168,10 +174,13 @@ static void _print_postorder(struct Node* n)
 {
     if (n == NULL)
         return;
-    // printf("%d ", n->data);
     _print_postorder(n->lchild);
     _print_postorder(n->rchild);
+#if eltype_num == int_type
+    printf("%d ", n->data);
+#elif eltype_num == float_type
     printf("%f ", n->data);
+#endif
 }
 
 void printtree(struct SplayTree* t, int order)
