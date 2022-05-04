@@ -1,9 +1,11 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "debug_macros.h"
 #include "splaytree.h"
 
+/*
 void test1()
 {
     puts("\n======== test 1 ========");
@@ -56,11 +58,32 @@ void test3()
     assert(t.root->lchild->rchild->data == 4);
     assert(t.root->lchild->rchild->lchild->data == 3);
 }
+*/
+
+void test4()
+{
+    puts("\n======== test 4 ========");
+    struct SplayTree t = newTree();
+    int n = 10;
+    float max_x = 1;
+    for (int i = 0; i < n; i++) {
+        float x = max_x * ((float)rand() / (float)(RAND_MAX));
+        int err = insert(&t, x);
+        assert(err == 0);
+    }
+    printf("in-order:\t");
+    printtree(&t, INORDER);
+    printf("pre-order:\t");
+    printtree(&t, PREORDER);
+    printf("post-order:\t");
+    printtree(&t, POSTORDER);
+}
 
 int main()
 {
-    test1();
-    test2();
-    test3();
+    // test1();
+    // test2();
+    // test3();
+    test4();
     return 0;
 }

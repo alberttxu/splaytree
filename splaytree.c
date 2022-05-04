@@ -6,7 +6,7 @@
 #include "debug_macros.h"
 #include "splaytree.h"
 
-struct Node* newNode(int x)
+struct Node* newNode(eltype x)
 {
     struct Node* n = malloc(sizeof(struct Node));
     n->parent = NULL;
@@ -39,7 +39,7 @@ bool isRightChild(struct Node* n)
 }
 
 // elements are assumed to be unique
-int insert(struct SplayTree* t, int x)
+int insert(struct SplayTree* t, eltype x)
 {
     if (t->root == NULL) {
         t->root = newNode(x);
@@ -69,7 +69,7 @@ int insert(struct SplayTree* t, int x)
     return 0;
 }
 
-struct Node* search(struct SplayTree* t, int x)
+struct Node* search(struct SplayTree* t, eltype x)
 {
     struct Node* n = t->root;
     while (n != NULL) {
@@ -106,7 +106,7 @@ int redirectParent(struct Node* n, struct Node* newChild)
     return 0;
 }
 
-int delete (struct SplayTree* t, int x)
+int delete (struct SplayTree* t, eltype x)
 {
     struct Node* n = search(t, x);
     if (n == NULL)
@@ -149,13 +149,43 @@ static void _print_inorder(struct Node* n)
     if (n == NULL)
         return;
     _print_inorder(n->lchild);
-    printf("%d ", n->data);
+    // printf("%d ", n->data);
+    printf("%f ", n->data);
     _print_inorder(n->rchild);
 }
 
-void print_inorder(struct SplayTree* t)
+static void _print_preorder(struct Node* n)
 {
-    _print_inorder(t->root);
+    if (n == NULL)
+        return;
+    // printf("%d ", n->data);
+    printf("%f ", n->data);
+    _print_preorder(n->lchild);
+    _print_preorder(n->rchild);
+}
+
+static void _print_postorder(struct Node* n)
+{
+    if (n == NULL)
+        return;
+    // printf("%d ", n->data);
+    _print_postorder(n->lchild);
+    _print_postorder(n->rchild);
+    printf("%f ", n->data);
+}
+
+void printtree(struct SplayTree* t, int order)
+{
+    if (order == INORDER) {
+        _print_inorder(t->root);
+    } else if (order == PREORDER) {
+        _print_preorder(t->root);
+    } else if (order == POSTORDER) {
+        _print_postorder(t->root);
+    } else {
+        puts("order must be inorder, preorder, or postorder");
+        return;
+    }
     printf("\n");
 }
 

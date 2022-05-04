@@ -3,11 +3,13 @@
 
 #ifndef SPLAYTREE_H
 #define SPLAYTREE_H
+
+#define eltype float
 struct Node {
     struct Node* parent;
     struct Node* lchild;
     struct Node* rchild;
-    int data;
+    eltype data;
 };
 
 struct SplayTree {
@@ -15,18 +17,24 @@ struct SplayTree {
     // root is the right child of the sentinal node
     struct Node* sentinal;
 };
+
+enum traversalorder {
+    INORDER,
+    PREORDER,
+    POSTORDER
+};
 #endif
 
-struct Node* newNode(int x);
+struct Node* newNode(eltype x);
 struct SplayTree newTree();
 bool isLeftChild(struct Node* n);
 bool isRightChild(struct Node* n);
-int insert(struct SplayTree* t, int x);
-struct Node* search(struct SplayTree* t, int x);
+int insert(struct SplayTree* t, eltype x);
+struct Node* search(struct SplayTree* t, eltype x);
 struct Node* successor(struct Node* n);
-int delete (struct SplayTree* t, int x);
+int delete (struct SplayTree* t, eltype x);
 static void _print_inorder(struct Node* n);
-void print_inorder(struct SplayTree* t);
+void printtree(struct SplayTree* t, int order);
 void free_postorder(struct Node* n);
 void free_treenodes(struct SplayTree* t);
 void rotateright(struct SplayTree* t, struct Node* n);
