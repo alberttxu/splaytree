@@ -16,7 +16,7 @@ struct Node* newNode(eltype x)
     return n;
 }
 
-struct SplayTree newTree()
+struct SplayTree newTree(void)
 {
     struct SplayTree t;
     t.root = NULL;

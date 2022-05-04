@@ -1,8 +1,8 @@
-CFLAGS = -g -fsanitize=address
+CFLAGS = -g -fsanitize=address -Wall -Wextra -Wstrict-prototypes
 # CFLAGS = -g
 
-CC = /usr/local/opt/llvm/bin/clang
-#CC = /usr/local/opt/gcc/bin/gcc-11
+#CC = /usr/local/opt/llvm/bin/clang
+CC = /usr/local/opt/gcc/bin/gcc-11
 
 main:
 	${CC} ${CFLAGS} -o main main.c splaytree.c

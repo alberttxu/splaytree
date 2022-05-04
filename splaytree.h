@@ -26,14 +26,13 @@ enum traversalorder {
 #endif
 
 struct Node* newNode(eltype x);
-struct SplayTree newTree();
+struct SplayTree newTree(void);
 bool isLeftChild(struct Node* n);
 bool isRightChild(struct Node* n);
 int insert(struct SplayTree* t, eltype x);
 struct Node* search(struct SplayTree* t, eltype x);
 struct Node* successor(struct Node* n);
 int delete (struct SplayTree* t, eltype x);
-static void _print_inorder(struct Node* n);
 void printtree(struct SplayTree* t, int order);
 void free_postorder(struct Node* n);
 void free_treenodes(struct SplayTree* t);

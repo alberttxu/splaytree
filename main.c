@@ -60,7 +60,7 @@ void test3()
 }
 */
 
-void test4()
+void test4(void)
 {
     puts("\n======== test 4 ========");
     struct SplayTree t = newTree();
@@ -79,7 +79,7 @@ void test4()
     printtree(&t, POSTORDER);
 }
 
-int main()
+int main(void)
 {
     // test1();
     // test2();
