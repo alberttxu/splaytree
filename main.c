@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "debug_macros.h"
 #include "splaytree.h"
@@ -81,15 +82,79 @@ void test4(void)
 }
 #endif
 
+#if eltype_num == int_type
+
+#include "cycle.h"
+
+int findinarray(int *arr, int size, int x) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == x)
+            return i;
+    }
+    return -1;
+}
+
+int test5(void)
+{
+    puts("\n======== test 5 ========");
+    FILE *fp = fopen("nums.txt", "r");
+    if (fp == NULL) {
+        perror("fopen");
+        return 1;
+    }
+    int n = 10000;
+    int *nums = malloc(n * sizeof(*nums));
+    int size = 10;
+    char line[size];
+    for (int i = 0; i < n && fgets(line, size, fp); i++)
+    {
+        line[strcspn(line, "\n")] = 0;
+        nums[i] = atoi(line);
+    }
+
+    struct SplayTree t = newTree();
+    for (int i = 0; i < n; i++) {
+        insert(&t, nums[i]);
+    }
+
+    ticks t0;
+    ticks t1;
+    t0 = getticks();
+    for (int i = 0; i < n; i++) {
+        search(&t, nums[i]);
+    }
+    t1 = getticks();
+    double runtime_tree = elapsed(t1, t0);
+    showfloat(runtime_tree);
+
+    t0 = getticks();
+    for (int i = 0; i < n; i++) {
+        findinarray(nums, n, i);
+    }
+    t1 = getticks();
+    double runtime_arr = elapsed(t1, t0);
+    showfloat(runtime_arr);
+
+    double speedup = runtime_arr / runtime_tree;
+    showfloat(speedup);
+    return 0;
+}
+#endif
+
 int main(void)
 {
 #if eltype_num == int_type
-    test1();
-    test2();
-    test3();
+    // test1();
+    // test2();
+    // test3();
 #endif
 #if eltype_num == float_type
     test4();
+#endif
+#if eltype_num == int_type
+    int err = test5();
+    if (err != 0)
+        return err;
 #endif
     return 0;
 }
