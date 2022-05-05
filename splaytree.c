@@ -217,14 +217,19 @@ void rotateright(struct SplayTree* t, struct Node* n)
 {
     assert(n != t->root);
     struct Node* p = n->parent;
+    struct Node* gp = p->parent;
+
+    p->parent = n;
+    if (n->rchild)
+        n->rchild->parent = p;
     p->lchild = n->rchild;
     n->rchild = p;
     if (p == t->root) {
         t->root = n;
+        t->sentinal->rchild = n;
     } else {
-        p->parent->lchild = n;
-        n->parent = p->parent;
-        p->parent = n;
+        gp->rchild = n;
+        n->parent = gp;
     }
 }
 
@@ -232,14 +237,19 @@ void rotateleft(struct SplayTree* t, struct Node* n)
 {
     assert(n != t->root);
     struct Node* p = n->parent;
+    struct Node* gp = p->parent;
+
+    p->parent = n;
+    if (n->lchild)
+        n->lchild->parent = p;
     p->rchild = n->lchild;
     n->lchild = p;
     if (p == t->root) {
         t->root = n;
+        t->sentinal->rchild = n;
     } else {
-        p->parent->rchild = n;
-        n->parent = p->parent;
-        p->parent = n;
+        gp->lchild = n;
+        n->parent = gp;
     }
 }
 
