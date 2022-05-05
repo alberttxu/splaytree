@@ -292,3 +292,11 @@ void splayup(struct SplayTree* t, struct Node* n)
     while (n != t->root)
         splay(t, n);
 }
+
+int search_splayup(struct SplayTree* t, eltype x) {
+    struct Node* n = search(t, x);
+    if (n == NULL)
+        return -1;
+    splayup(t, n);
+    return 0;
+}

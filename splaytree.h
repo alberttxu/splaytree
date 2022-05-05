@@ -49,3 +49,4 @@ void rotateright(struct SplayTree* t, struct Node* n);
 void rotateleft(struct SplayTree* t, struct Node* n);
 void splay(struct SplayTree* t, struct Node* n);
 void splayup(struct SplayTree* t, struct Node* n);
+int search_splayup(struct SplayTree* t, eltype x);
