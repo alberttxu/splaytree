@@ -39,20 +39,20 @@ bool isRightChild(struct Node* n)
 }
 
 // elements are assumed to be unique
-int insert(struct SplayTree* t, eltype x)
+struct Node* insert(struct SplayTree* t, eltype x)
 {
     if (t->root == NULL) {
         t->root = newNode(x);
         t->root->parent = t->sentinal;
         t->sentinal->rchild = t->root;
-        return 0;
+        return t->root;
     }
     struct Node* n = t->root;
     struct Node* prev_n = NULL;
     while (n != NULL) {
         prev_n = n;
         if (x == n->data)
-            return -1;
+            return NULL;
         if (x < n->data) {
             n = n->lchild;
         } else {
@@ -66,7 +66,7 @@ int insert(struct SplayTree* t, eltype x)
     } else {
         prev_n->rchild = n;
     }
-    return 0;
+    return n;
 }
 
 struct Node* search(struct SplayTree* t, eltype x)
@@ -94,6 +94,7 @@ struct Node* successor(struct Node* n)
     return n;
 }
 
+// Set the child of n's parent to newChild
 int redirectParent(struct Node* n, struct Node* newChild)
 {
     if (isLeftChild(n)) {
@@ -219,7 +220,6 @@ void rotateright(struct SplayTree* t, struct Node* n)
     struct Node* p = n->parent;
     struct Node* gp = p->parent;
 
-    p->parent = n;
     if (n->rchild)
         n->rchild->parent = p;
     p->lchild = n->rchild;
@@ -228,9 +228,10 @@ void rotateright(struct SplayTree* t, struct Node* n)
         t->root = n;
         t->sentinal->rchild = n;
     } else {
-        gp->rchild = n;
-        n->parent = gp;
+        redirectParent(p, n);
     }
+    p->parent = n;
+    n->parent = gp;
 }
 
 void rotateleft(struct SplayTree* t, struct Node* n)
@@ -239,7 +240,6 @@ void rotateleft(struct SplayTree* t, struct Node* n)
     struct Node* p = n->parent;
     struct Node* gp = p->parent;
 
-    p->parent = n;
     if (n->lchild)
         n->lchild->parent = p;
     p->rchild = n->lchild;
@@ -248,9 +248,10 @@ void rotateleft(struct SplayTree* t, struct Node* n)
         t->root = n;
         t->sentinal->rchild = n;
     } else {
-        gp->lchild = n;
-        n->parent = gp;
+        redirectParent(p, n);
     }
+    p->parent = n;
+    n->parent = gp;
 }
 
 void splay(struct SplayTree* t, struct Node* n)
@@ -293,7 +294,8 @@ void splayup(struct SplayTree* t, struct Node* n)
         splay(t, n);
 }
 
-int search_splayup(struct SplayTree* t, eltype x) {
+int search_splayup(struct SplayTree* t, eltype x)
+{
     struct Node* n = search(t, x);
     if (n == NULL)
         return -1;

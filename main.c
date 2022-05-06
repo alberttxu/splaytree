@@ -86,7 +86,8 @@ void test4(void)
 
 #include "cycle.h"
 
-int findinarray(int *arr, int size, int x) {
+int findinarray(int* arr, int size, int x)
+{
     for (int i = 0; i < size; i++) {
         if (arr[i] == x)
             return i;
@@ -94,20 +95,20 @@ int findinarray(int *arr, int size, int x) {
     return -1;
 }
 
+// benchmark regular bst search vs array scan
 int test5(void)
 {
     puts("\n======== test 5 ========");
-    FILE *fp = fopen("nums.txt", "r");
+    FILE* fp = fopen("nums.txt", "r");
     if (fp == NULL) {
         perror("fopen");
         return 1;
     }
-    int n = 10000;
-    int *nums = malloc(n * sizeof(*nums));
-    int size = 10;
-    char line[size];
-    for (int i = 0; i < n && fgets(line, size, fp); i++)
-    {
+    int n = 5;
+    int* nums = malloc(n * sizeof(*nums));
+    int linelen = 10;
+    char line[linelen];
+    for (int i = 0; i < n && fgets(line, linelen, fp); i++) {
         line[strcspn(line, "\n")] = 0;
         nums[i] = atoi(line);
     }
@@ -139,6 +140,91 @@ int test5(void)
     showfloat(speedup);
     return 0;
 }
+
+void test6(void)
+{
+    puts("\n======== test 6 ========");
+    struct SplayTree t = newTree();
+    struct Node* n1 = insert(&t, 1);
+    struct Node* n2 = insert(&t, 2);
+    rotateleft(&t, n2);
+    assert(t.root == n2);
+    assert(t.sentinal->rchild == n2);
+    assert(n2->parent == t.sentinal);
+    assert(n2->lchild == n1);
+    assert(n2->rchild == NULL);
+    assert(n1->parent == n2);
+    assert(n1->lchild == NULL);
+    assert(n1->rchild == NULL);
+}
+
+void test7(void)
+{
+    puts("\n======== test 7 ========");
+    struct SplayTree t = newTree();
+    struct Node* n1 = insert(&t, 1);
+    struct Node* n2 = insert(&t, 2);
+    struct Node* n3 = insert(&t, 3);
+    rotateleft(&t, n3);
+    assert(t.root == n1);
+    assert(n1->parent == t.sentinal);
+    assert(n1->lchild == NULL);
+    assert(n1->rchild == n3);
+    assert(n3->parent == n1);
+    assert(n3->lchild == n2);
+    assert(n3->rchild == NULL);
+    assert(n2->parent == n3);
+    assert(n2->lchild == NULL);
+    assert(n2->rchild == NULL);
+}
+
+int test8(void)
+{
+    puts("\n======== test 8 ========");
+    FILE* fp = fopen("nums.txt", "r");
+    if (fp == NULL) {
+        perror("fopen");
+        return -1;
+    }
+    int n = 10000;
+    int* nums = malloc(n * sizeof(*nums));
+    int linelen = 10;
+    char line[linelen];
+    for (int i = 0; i < n && fgets(line, linelen, fp); i++) {
+        line[strcspn(line, "\n")] = 0;
+        nums[i] = atoi(line);
+    }
+
+    struct SplayTree t = newTree();
+    for (int i = 0; i < n; i++) {
+        insert(&t, nums[i]);
+    }
+
+    ticks t0;
+    ticks t1;
+    t0 = getticks();
+    for (int i = 0; i < n; i++) {
+        search(&t, nums[i]);
+    }
+    t1 = getticks();
+    double runtime_nosplay = elapsed(t1, t0);
+    showfloat(runtime_nosplay);
+
+    t0 = getticks();
+    for (int i = 0; i < n; i++) {
+        // showint(i);
+        // showint(nums[i]);
+        assert(search_splayup(&t, nums[i]) == 0);
+    }
+    t1 = getticks();
+    double runtime_splay = elapsed(t1, t0);
+    showfloat(runtime_splay);
+
+    double speedup = runtime_nosplay / runtime_splay;
+    showfloat(speedup);
+    return 0;
+}
+
 #endif
 
 int main(void)
@@ -152,9 +238,10 @@ int main(void)
     test4();
 #endif
 #if eltype_num == int_type
-    int err = test5();
-    if (err != 0)
-        return err;
+    // assert(test5() == 0);
+    test6();
+    test7();
+    assert(test8() == 0);
 #endif
     return 0;
 }

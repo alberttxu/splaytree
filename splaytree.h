@@ -9,16 +9,16 @@
 #define eltype_num int_type
 
 #if eltype_num == int_type
-    #define eltype int
+#define eltype int
 #elif eltype_num == float_type
-    #define eltype float
+#define eltype float
 #endif
 
 struct Node {
+    eltype data;
     struct Node* parent;
     struct Node* lchild;
     struct Node* rchild;
-    eltype data;
 };
 
 struct SplayTree {
@@ -38,7 +38,7 @@ struct Node* newNode(eltype x);
 struct SplayTree newTree(void);
 bool isLeftChild(struct Node* n);
 bool isRightChild(struct Node* n);
-int insert(struct SplayTree* t, eltype x);
+struct Node* insert(struct SplayTree* t, eltype x);
 struct Node* search(struct SplayTree* t, eltype x);
 struct Node* successor(struct Node* n);
 int delete (struct SplayTree* t, eltype x);
