@@ -253,9 +253,10 @@ int test9(void)
     }
 
     int n_queries = 100000;
+    float p = 0.95;
+    int m = 30;
+
     int queries[n_queries];
-    float p = 0.99;
-    int m = 3;
     int* A = nums;
     int* B = &nums[n - m];
     unsigned seed = 0;
@@ -276,22 +277,51 @@ int test9(void)
     ticks t1;
     t0 = getticks();
     for (int i = 0; i < n_queries; i++) {
-        search(&t, queries[i]);
+        // search(&t, queries[i]);
+        assert(search(&t, queries[i]) != NULL);
     }
     t1 = getticks();
-    double runtime_nosplay = elapsed(t1, t0);
-    showfloat(runtime_nosplay);
+    double runtime_bst = elapsed(t1, t0);
+    showfloat(runtime_bst);
+
+    struct Node* cache[m];
+    for (int i = 0; i < m; i++) {
+        cache[i] = search(&t, B[i]);
+    }
+
+    // simple array cache, and bst search on a miss
+    t0 = getticks();
+    for (int i = 0; i < n_queries; i++) {
+        int query = queries[i];
+
+        bool incache = false;
+        int j = findinarray(B, m, query);
+        if (j != -1) {
+            struct Node* n = cache[j];
+            incache = true;
+        }
+        if (!incache) {
+            // search(&t, query);
+            assert(search(&t, query) != NULL);
+        }
+    }
+    t1 = getticks();
+    double runtime_arraycache = elapsed(t1, t0);
+    double speedup_arraycache = runtime_bst / runtime_arraycache;
+    showfloat(runtime_arraycache);
 
     t0 = getticks();
     for (int i = 0; i < n_queries; i++) {
+        // search_splayup(&t, queries[i]);
         assert(search_splayup(&t, queries[i]) == 0);
     }
     t1 = getticks();
     double runtime_splay = elapsed(t1, t0);
+    double speedup_splay = runtime_bst / runtime_splay;
     showfloat(runtime_splay);
 
-    double speedup = runtime_nosplay / runtime_splay;
-    showfloat(speedup);
+    showfloat(speedup_splay);
+    showfloat(speedup_arraycache);
     return 0;
 }
 
