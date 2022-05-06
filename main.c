@@ -102,7 +102,7 @@ int test5(void)
     FILE* fp = fopen("nums.txt", "r");
     if (fp == NULL) {
         perror("fopen");
-        return 1;
+        return -1;
     }
     int n = 5;
     int* nums = malloc(n * sizeof(*nums));
@@ -178,15 +178,14 @@ void test7(void)
     assert(n2->rchild == NULL);
 }
 
-int test8(void)
+int* readnums(int n)
 {
-    puts("\n======== test 8 ========");
+
     FILE* fp = fopen("nums.txt", "r");
     if (fp == NULL) {
         perror("fopen");
-        return -1;
+        return NULL;
     }
-    int n = 10000;
     int* nums = malloc(n * sizeof(*nums));
     int linelen = 10;
     char line[linelen];
@@ -194,6 +193,15 @@ int test8(void)
         line[strcspn(line, "\n")] = 0;
         nums[i] = atoi(line);
     }
+    return nums;
+}
+
+int test8(void)
+{
+    puts("\n======== test 8 ========");
+    int n = 10000;
+    int* nums = readnums(n);
+    assert(nums != NULL);
 
     struct SplayTree t = newTree();
     for (int i = 0; i < n; i++) {
@@ -225,23 +233,83 @@ int test8(void)
     return 0;
 }
 
+/** Bi-modal search distribution with m elements being more frequently accessed.
+ * Split nums into 2 groups, A & B.
+ * Let B contain the m frequently accesssed elements.
+ * For each search:
+ *   An element of A is queried with probability 1-p.
+ *   An element of B is queried with probability p.
+ */
+int test9(void)
+{
+    puts("\n======== test 9 ========");
+    int n = 10000;
+    int* nums = readnums(n);
+    assert(nums != NULL);
+
+    struct SplayTree t = newTree();
+    for (int i = 0; i < n; i++) {
+        insert(&t, nums[i]);
+    }
+
+    int n_queries = 100000;
+    int queries[n_queries];
+    float p = 0.99;
+    int m = 3;
+    int* A = nums;
+    int* B = &nums[n - m];
+    unsigned seed = 0;
+    srand(seed);
+    for (int i = 0; i < n_queries; i++) {
+        int r = rand();
+        float coin = (float)r / (float)(RAND_MAX);
+        int query;
+        if (coin < p) {
+            query = B[r % m];
+        } else {
+            query = A[r % (n - m)];
+        }
+        queries[i] = query;
+    }
+
+    ticks t0;
+    ticks t1;
+    t0 = getticks();
+    for (int i = 0; i < n_queries; i++) {
+        search(&t, queries[i]);
+    }
+    t1 = getticks();
+    double runtime_nosplay = elapsed(t1, t0);
+    showfloat(runtime_nosplay);
+
+    t0 = getticks();
+    for (int i = 0; i < n_queries; i++) {
+        assert(search_splayup(&t, queries[i]) == 0);
+    }
+    t1 = getticks();
+    double runtime_splay = elapsed(t1, t0);
+    showfloat(runtime_splay);
+
+    double speedup = runtime_nosplay / runtime_splay;
+    showfloat(speedup);
+    return 0;
+}
+
 #endif
 
 int main(void)
 {
-#if eltype_num == int_type
+#if eltype_num == float_type
+    test4();
+#elif eltype_num == int_type
     // test1();
     // test2();
     // test3();
-#endif
-#if eltype_num == float_type
-    test4();
-#endif
-#if eltype_num == int_type
     // assert(test5() == 0);
-    test6();
-    test7();
-    assert(test8() == 0);
+    // test6();
+    // test7();
+    // test8();
+    test9();
 #endif
     return 0;
 }
