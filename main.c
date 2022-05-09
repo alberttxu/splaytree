@@ -233,28 +233,27 @@ int test8(void)
     return 0;
 }
 
-/** Bi-modal search distribution with m elements being more frequently accessed.
- * Split nums into 2 groups, A & B.
- * Let B contain the m frequently accesssed elements.
- * For each search:
- *   An element of A is queried with probability 1-p.
- *   An element of B is queried with probability p.
+/** Bi-modal search distribution with m frequently accessed elements.
+ *
+ * We generate n unique numbers and partition them into 2 groups, A & B with n-m & m elements.
+ * To generate a query:
+ *     Flip a weighted coin with P(head) = 1-p, and P(tail) = p, 0 < p < 1.
+ *     If heads, pick a random element of A. Otherwise, pick a random element of B.
+ *
+ * The 2 parameters we can adjust are m and p. Intuitively the runtime speedup of using
+ * a splay tree vs BST should decrease in m and increase in p.
+ *
+ * We also compare the performance of using a BST with a simple array cache of size m.
  */
-int test9(void)
+void benchmark(int *nums, int n, int n_queries, int m, float p, FILE* f)
 {
-    puts("\n======== test 9 ========");
-    int n = 10000;
-    int* nums = readnums(n);
-    assert(nums != NULL);
+    showint(m);
+    showfloat(p);
 
     struct SplayTree t = newTree();
     for (int i = 0; i < n; i++) {
         insert(&t, nums[i]);
     }
-
-    int n_queries = 100000;
-    float p = 0.95;
-    int m = 30;
 
     int queries[n_queries];
     int* A = nums;
@@ -277,12 +276,11 @@ int test9(void)
     ticks t1;
     t0 = getticks();
     for (int i = 0; i < n_queries; i++) {
-        // search(&t, queries[i]);
         assert(search(&t, queries[i]) != NULL);
     }
     t1 = getticks();
     double runtime_bst = elapsed(t1, t0);
-    showfloat(runtime_bst);
+    // showfloat(runtime_bst);
 
     struct Node* cache[m];
     for (int i = 0; i < m; i++) {
@@ -301,28 +299,51 @@ int test9(void)
             incache = true;
         }
         if (!incache) {
-            // search(&t, query);
             assert(search(&t, query) != NULL);
         }
     }
     t1 = getticks();
     double runtime_arraycache = elapsed(t1, t0);
     double speedup_arraycache = runtime_bst / runtime_arraycache;
-    showfloat(runtime_arraycache);
+    // showfloat(runtime_arraycache);
 
     t0 = getticks();
     for (int i = 0; i < n_queries; i++) {
-        // search_splayup(&t, queries[i]);
         assert(search_splayup(&t, queries[i]) == 0);
     }
     t1 = getticks();
     double runtime_splay = elapsed(t1, t0);
     double speedup_splay = runtime_bst / runtime_splay;
-    showfloat(runtime_splay);
+    // showfloat(runtime_splay);
 
-    showfloat(speedup_splay);
-    showfloat(speedup_arraycache);
-    return 0;
+    // showfloat(speedup_splay);
+    // showfloat(speedup_arraycache);
+
+    if (f) {
+        fprintf(f, "%d,%f,%f,%f\n", m, p, speedup_arraycache, speedup_splay);
+    }
+}
+
+void test9(void)
+{
+    puts("\n======== test 9 ========");
+    int n = 10000;
+    int* nums = readnums(n);
+    assert(nums != NULL);
+
+    FILE *f = fopen("benchmark.csv", "w");
+    assert(f != NULL);
+    fprintf(f, "m,p,speedup_arraycache,speedup_splay\n");
+
+    int n_queries = 100000;
+    // int m = 30;
+    // float p = 0.95;
+
+    for (int m = 1; m < 50; m++) {
+        for (float p = 0.5; p < 1.0; p += 0.025)
+            benchmark(nums, n, n_queries, m, p, f);
+    }
+    fclose(f);
 }
 
 #endif
