@@ -331,8 +331,26 @@ void benchmark(int *nums, int n, int n_queries, int m, float p, FILE* f)
     // showfloat(speedup_arraycache);
 
     free_treenodes(&t);
+
+    struct SplayTree t2 = newTree();
+    for (int i = 0; i < n; i++) {
+        insert(&t2, nums[i]);
+    }
+    // presplay all elements in B
+    for (int i = 0; i < m; i++) {
+        search_splayup(&t2, B[i]);
+    }
+    t0 = getticks();
+    for (int i = 0; i < n_queries; i++) {
+        assert(search(&t2, queries[i]) != NULL);
+    }
+    t1 = getticks();
+    free_treenodes(&t2);
+    double runtime_presplay = elapsed(t1, t0);
+    double speedup_presplay = runtime_bst / runtime_presplay;
+
     if (f) {
-        fprintf(f, "%d,%f,%f,%f\n", m, p, speedup_arraycache, speedup_splay);
+        fprintf(f, "%d,%f,%f,%f,%f\n", m, p, speedup_arraycache, speedup_splay, speedup_presplay);
     }
 }
 
@@ -345,14 +363,14 @@ void test9(void)
 
     FILE *f = fopen("benchmark.csv", "w");
     assert(f != NULL);
-    fprintf(f, "m,p,speedup_arraycache,speedup_splay\n");
+    fprintf(f, "m,p,speedup_arraycache,speedup_splay,speedup_presplay\n");
 
     int n_queries = 100000;
     // int m = 30;
     // float p = 0.95;
 
-    for (int m = 1; m < 50; m++) {
-        for (float p = 0.5; p < 1.0; p += 0.025)
+    for (int m = 1; m < 500; m += 10) {
+        for (float p = 0.5; p < 1.0; p += 0.02)
             benchmark(nums, n, n_queries, m, p, f);
     }
     fclose(f);
