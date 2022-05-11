@@ -32,7 +32,7 @@ But this region seems really small - to even have a chance of outperforming the 
 Since `m` has to be tiny, I also implemented a kind of naive method of pre-querying
 the elements of `B` and caching the results in an array, which has O(`m`) lookup time for queries into `B`.
 
-![array cache benchmark](BST_arraycache_benchmark.png)
+![array cache benchmark](arraycache_benchmark.png)
 
 Our intuition is the same, a larger `m` and smaller `p` decreases the effectiveness of the cache.
 But in this case the transition boundary is much farther out and our speedup region is way bigger.
