@@ -20,6 +20,7 @@ void test1(void)
     rotateright(&t, n);
     showint(t.root->data);
     assert(t.root == n);
+    free_treenodes(&t);
 }
 
 void test2(void)
@@ -35,6 +36,7 @@ void test2(void)
     rotateleft(&t, n);
     showint(t.root->data);
     assert(t.root == n);
+    free_treenodes(&t);
 }
 
 void test3(void)
@@ -58,6 +60,7 @@ void test3(void)
     assert(t.root->lchild->lchild->data == 1);
     assert(t.root->lchild->rchild->data == 4);
     assert(t.root->lchild->rchild->lchild->data == 3);
+    free_treenodes(&t);
 }
 #endif
 
@@ -79,6 +82,7 @@ void test4(void)
     printtree(&t, PREORDER);
     printf("post-order:\t");
     printtree(&t, POSTORDER);
+    free_treenodes(&t);
 }
 #endif
 
@@ -138,6 +142,8 @@ int test5(void)
 
     double speedup = runtime_arr / runtime_tree;
     showfloat(speedup);
+    free_treenodes(&t);
+    free(nums);
     return 0;
 }
 
@@ -156,6 +162,7 @@ void test6(void)
     assert(n1->parent == n2);
     assert(n1->lchild == NULL);
     assert(n1->rchild == NULL);
+    free_treenodes(&t);
 }
 
 void test7(void)
@@ -176,6 +183,7 @@ void test7(void)
     assert(n2->parent == n3);
     assert(n2->lchild == NULL);
     assert(n2->rchild == NULL);
+    free_treenodes(&t);
 }
 
 int* readnums(int n)
@@ -230,6 +238,9 @@ int test8(void)
 
     double speedup = runtime_nosplay / runtime_splay;
     showfloat(speedup);
+
+    free_treenodes(&t);
+    free(nums);
     return 0;
 }
 
@@ -319,6 +330,7 @@ void benchmark(int *nums, int n, int n_queries, int m, float p, FILE* f)
     // showfloat(speedup_splay);
     // showfloat(speedup_arraycache);
 
+    free_treenodes(&t);
     if (f) {
         fprintf(f, "%d,%f,%f,%f\n", m, p, speedup_arraycache, speedup_splay);
     }
@@ -344,6 +356,7 @@ void test9(void)
             benchmark(nums, n, n_queries, m, p, f);
     }
     fclose(f);
+    free(nums);
 }
 
 #endif
